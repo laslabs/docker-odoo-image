@@ -53,7 +53,7 @@ RUN apt-get update && apt-get install -y xsltproc xmlstarlet openssl \
         lua50 liblua50-dev liblualib50-dev \
         exuberant-ctags \
     && pip install --upgrade SOAPpy pyopenssl suds \
-        pillow qrcode xmltodict M2Crypto \
+        pillow qrcode xmltodict M2Crypto coverage xmlrunner \
         recaptcha-client egenix-mx-base \
         PyWebDAV mygengo pandas==0.16.2 numexpr==2.4.4 \
         ndg-httpsclient pyasn1 \
@@ -112,8 +112,8 @@ RUN mkdir -p ${REPO_REQUIREMENTS}/odoo/ \
  && git init ${REPO_REQUIREMENTS}/odoo/ \
  && git --git-dir=${REPO_REQUIREMENTS}/odoo/.git remote add odoo https://github.com/odoo/odoo.git \
  && git --git-dir=${REPO_REQUIREMENTS}/odoo/.git remote add oca https://github.com/oca/ocb.git \
- && git --git-dir=${REPO_REQUIREMENTS}/odoo/.git remote add vauxoo https://github.com/vauxoo/odoo.git \
- && git --git-dir=${REPO_REQUIREMENTS}/odoo/.git fetch --all \
+ && git --git-dir=${REPO_REQUIREMENTS}/odoo/.git remote add laslabs https://github.com/laslabs/odoo.git \
+ && git --git-dir=${REPO_REQUIREMENTS}/odoo/.git fetch --all \ 
  && mkdir -p ${REPO_REQUIREMENTS}/addons-vauxoo/ \
  && git init ${REPO_REQUIREMENTS}/addons-vauxoo/ \
  && git --git-dir=${REPO_REQUIREMENTS}/addons-vauxoo/.git remote add vauxoo https://github.com/vauxoo/addons-vauxoo.git \

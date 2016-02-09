@@ -27,6 +27,19 @@ def docker_entrypoint():
     cmd = """sed -i "s/== 'root'/== 'force_root'/g" %s/*/openerp/cli/server.py""" % os.getenv("HOME")
     subprocess.call(cmd, shell=True)
 
+
+    # Seds for XMLRunner and Coverage compatibility
+    print("Setting up XMLRunner & Coverage")
+    module_py = '%s/*/openerp/modules/module.py' % os.getenv("HOME")
+    cmd = """awk /import unittest/ { print; \
+                                 print "from xmlrunner import XMLTestRunner"; \
+                                 print "import coverage"; \
+                                 print "TEST_RESULTS = '\\'''\/'_results'\\''"; \
+                               }1' %s > %s""" % (module_py, module_py)
+    subprocess.call(cmd, shell=True)
+    cmd = """sed -i "s/unittest.TextTestRunner(verbosity=2,/XMLTestRunner(verbosity=2, output=TEST_RESULTS,/g" %s""" % module_py
+    subprocess.call(cmd, shell=True)
+
     # Start ssh service
     if os.environ.get('START_SSH', False):
         cmd = "/etc/init.d/ssh start"
@@ -51,23 +64,12 @@ def docker_entrypoint():
         count += 1
     print("...psql service started.")
 
-    # Change travis pro info from coveralls
+    # Delete coveralls
     travis_build_dir = os.environ.get('TRAVIS_BUILD_DIR', '')
     fname_coveralls = os.path.join(travis_build_dir, '.coveralls.yml')
-    coveralls_lines = []
-    exists_service_name_ok = False
     if os.path.isfile(fname_coveralls):
-        with open(fname_coveralls, 'r') as fcoveralls:
-            for line in fcoveralls:
-                if 'service_name' in line:
-                    if 'travis' in line:
-                        continue
-                    exists_service_name_ok = True
-                coveralls_lines.append(line)
-    if not exists_service_name_ok:
-        # TODO: Add git user.name to service_name
-        coveralls_lines.append('service_name: vauxoo_container')
-    open(fname_coveralls, 'w').writelines(coveralls_lines)
+        os.unlink(fname_coveralls)
+
     return True
 
 
