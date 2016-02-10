@@ -39,6 +39,7 @@ def docker_entrypoint():
     ]
     cmd = "sed -i 's|import unittest|" + '\\n'.join(imports) + "|g' " + module_py
     subprocess.call(cmd, shell=True)
+
     cmd = """sed -i "s/unittest.TextTestRunner(verbosity=2,/XMLTestRunner(verbosity=2, output=TEST_RESULTS,/g" %s""" % module_py
     subprocess.call(cmd, shell=True)
 
