@@ -31,11 +31,13 @@ def docker_entrypoint():
     # Seds for XMLRunner and Coverage compatibility
     print("Setting up XMLRunner & Coverage")
     module_py = '%s/*/openerp/modules/module.py' % os.getenv("HOME")
-    cmd = """awk /import unittest/ { print; \
-                                 print "from xmlrunner import XMLTestRunner"; \
-                                 print "import coverage"; \
-                                 print "TEST_RESULTS = '\\'''\/'_results'\\''"; \
-                               }1' %s > %s""" % (module_py, module_py)
+    imports = [
+        'import unittest',
+        'from xmlrunner import XMLTestRunner',
+        'import coverage',
+        'TEST_RESULTS = "/_results"',
+    ]
+    cmd = "sed -i 's|import unittest|" + '\\n'.join(imports) + "|g' " + module_py
     subprocess.call(cmd, shell=True)
     cmd = """sed -i "s/unittest.TextTestRunner(verbosity=2,/XMLTestRunner(verbosity=2, output=TEST_RESULTS,/g" %s""" % module_py
     subprocess.call(cmd, shell=True)
