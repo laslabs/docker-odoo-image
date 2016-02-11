@@ -31,16 +31,22 @@ def docker_entrypoint():
     # Seds for XMLRunner and Coverage compatibility
     print("Setting up XMLRunner & Coverage")
     module_py = '%s/*/openerp/modules/module.py' % os.getenv("HOME")
+    server_py = '%s/*/openerp/service/server.py' % os.getenv("HOME")
+    xml_sed = """sed -i "s/unittest.TextTestRunner(/XMLTestRunner(output=TEST_RESULTS,/g" %s"""
     imports = [
         'import unittest',
         'from xmlrunner import XMLTestRunner',
         'import coverage',
         'TEST_RESULTS = "/_results"',
     ]
-    cmd = "sed -i 's|import unittest|" + '\\n'.join(imports) + "|g' " + module_py
+    test_sed = "sed -i 's|import unittest|" + '\\n'.join(imports) + "|g' "
+    subprocess.call(cmd + module_py, shell=True)
+    subprocess.call(cmd + server_py, shell=True)
+
+    cmd = xml_sed % module_py
     subprocess.call(cmd, shell=True)
 
-    cmd = """sed -i "s/unittest.TextTestRunner(verbosity=2,/XMLTestRunner(verbosity=2, output=TEST_RESULTS,/g" %s""" % module_py
+    cmd = xml_sed % server_py
     subprocess.call(cmd, shell=True)
 
     # Start ssh service
