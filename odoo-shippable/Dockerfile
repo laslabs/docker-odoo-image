@@ -119,5 +119,8 @@ RUN mkdir -p ${REPO_REQUIREMENTS}/odoo/ \
  && git --git-dir=${REPO_REQUIREMENTS}/addons-vauxoo/.git remote add vauxoo https://github.com/vauxoo/addons-vauxoo.git \
  && git --git-dir=${REPO_REQUIREMENTS}/addons-vauxoo/.git fetch --all
 
+# Install Coverage & XMLRunner
+RUN pip install coverage xmlrunner
+
 # Expose postgresql, odoo, ssh and mosh ports
 EXPOSE 5432 8069 8070 8071 8072 22 60000-60005/udp
